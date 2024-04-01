@@ -1,0 +1,359 @@
+I will attack from behind
+Set-ExecutionPolicy Unrestricted -Scope Process
+test\Scripts\activate
+src\Scripts\activate
+EL\Scripts\activate
+django-admin startproject project .
+python manage.py startapp home
+python manage.py runserver
+python manage.py migrate
+python manage.py makemigrations
+python manage.py createsuperuser
+cd ..
+pip freeze > requirements.txt
+cd Django
+cd E-Commerce_Website
+cd E-commercial_Friday
+py manage.py sqlmigrate members 0001
+
+--Don't forget to migrate
+
+============================
+
+SETTINGS:
+
+-Don't forget to add the apps to the INSTALLED_APPS list
+
+-Don't forget to add the templates folder to the TEMPLATES[....
+							DIR['templates']
+							....]
+-STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    "/var/www/static/",
+]
+MEDIA_URL='media/'
+MEDIA_ROOT=os.path.join(BASE_DIR,'media')
+
+
+============================
+URLs:
+-when you want to add an app you have to add its url: path('blog/', include('blog.urls',namespace='blog'))-app url
+-views.method -> to display the function from the views file of this app: path('second',views.second,name='second')-branch url
+-in the app url if we typed path('', include('blog.urls',namespace='blog')) or path('',views.second,name='second') in the branch url -> this will be the first page to appear
+
+-from django.conf import settings
+-from django.conf.urls.static import static
+
+-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+============================
+
+VIEWS:
+
+-def second(request):
+    return render(request,'pages/second.html',{})
+ this is an example of a method in the views where it returns the contents of the html file "second", {} is for the context
+ , "request" is necessary in the views method if the return is "render".
+
+-{'name':'SAIF'} is the form of the context, when you want to show it in the templates you just choose where to put it an then type {{key}}, in this case, {{name}} -> SAIF.
+
+-READ DJANGO DOCUMENTATION
+
+-var = Class.objects.all -> every single object in the class is now stored in the variable
+
+-var = Class.objects.get({attr}={value})
+
+-context={'product':product.filter(name__contains="R")}
+
+-context={'product':product.filter(price__range=(100,1000))}
+
+-To get the value of an input from the templates: username = request.POST['username']
+
+ where username is the name of the input specified in the templates
+
+-When you want to display Http404 error, don't use <<return>>, use <<raise>>
+
+-<<from django.shortcuts import redirect, render>> -> redirect sends the user to the specified page, and render displays templates or   
+
+HttpResponse.
+
+-<<from django.contrib.auth import authenticate,login,logout>> -> methods for user authentication purposes
+
+- To retrieve info. from the forms use :
+
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid:
+            form.save()
+            username = form.cleaned_data['username']	<<cleaned_data might refer to the saved, requested data>>
+            password = form.cleaned_data['password1']
+            user = authenticate(username=username,password=password)	<<authenticate checks if the info. is valid>>
+            login(request,user)		
+
+            return redirect('accounts:profile')
+    else:
+        form = RegisterForm()
+
+- user = UserForm(request.POST) -> request.POST is required when initializing the form to accept the data
+
+- profile = Profile(request.POST,request.FILES) -> request.FILES is required to accept files like images
+
+-	profile=Profile.objects.get(user=request.user)
+
+	p = ProfileForm(request.POST,request.FILES,instance=profile) -> instance is used to fill the form with previous info. (if exist)
+
+- To check if the user is signed in:
+	
+	request.user.is_authenticated
+
+- To access the current user:
+
+	request.user
+
+- To access the info. the user: 
+	
+	from .models import Person
+	def person(request):
+	    person=Person.objects.get(user=request.user)
+	    person.user.username
+	    person.user.first_name
+	    person.user.last_name
+	    person.user.email
+	    person.user.phone
+
+provided that these fields exist
+
+- email=request.POST['email']
+  user = User.objects.filter(email=email).exists()
+
+- keyword = request.GET['keyword']
+  Model.objects.filter(description__icontains=keyword)	->   if this word exists in this field (description), to check if it's the exact  value -> description__iexact
+
+- to make the user login before proceeding, you can use: from django.contrib.auth.decorators import login_required.
+  use it as a decorator before the specified function:
+	
+  @login_required(login_url='{login_page_url}')
+  def add_cart(request,product_id):
+    product = Product.objects.get(id=product_id)
+    try:
+        cart = Cart.objects.get(cart_id=_cart_id(request))
+    except Cart.DoesNotExist:
+        cart = Cart.objects.create(
+            cart_id=_cart_id(request)
+        )   
+        cart.save()
+    try:
+        cart_item = Cart_item.objects.get(product=product,cart=cart) 
+        cart_item.quantity += 1
+        cart_item.save()
+    except Cart_item.DoesNotExist:
+        cart_item = Cart_item.objects.create(
+            product=product,
+            cart = cart,
+            quantity=1
+        )         
+        cart_item.save()
+    return redirect('cart:cart') 
+
+- class Model(models.Model):
+	var=models.CharField(Model2,)
+  (in the views)
+	to access the contents of Model2 => m.var__field1 	(m.var.field1: will probably not work for you depending on the order of  															your models)
+
+- product = get_object_or_404(Product,slug=product_slug,category=category) -> as the method implies
+
+============================
+MODELS:
+__all__ = [
+    "AutoField",
+    "BLANK_CHOICE_DASH",
+    "BigAutoField",
+    "BigIntegerField",
+    "BinaryField",
+    "BooleanField",
+    "CharField",
+    "CommaSeparatedIntegerField",
+    "DateField",
+    "DateTimeField",
+    "DecimalField",
+    "DurationField",
+    "EmailField",
+    "Empty",
+    "Field",
+    "FilePathField",
+    "FloatField",
+    "GenericIPAddressField",
+    "IPAddressField",
+    "IntegerField",
+    "NOT_PROVIDED",
+    "NullBooleanField",
+    "PositiveBigIntegerField",
+    "PositiveIntegerField",
+    "PositiveSmallIntegerField",
+    "SlugField",
+    "SmallAutoField",
+    "SmallIntegerField",
+    "TextField",
+    "TimeField",
+    "URLField",
+    "UUIDField",
+]
+-car=models.OneToOneField(Car, on_delete=models.CASCADE) -> this variable is a menu displaying the Car class objects to choose from in its own model, only one item each.
+
+-OneToOneField -> one element can hold this entity
+
+-ForeignKey -> multiple elements can hold this entity 
+
+-ManyToMany -> multiple elements can holds multiple entities
+
+-on_delete=models.CASCADE -> useful in OneToOne relations so as to when the element is deleted this entity will be deleted too
+
+- To use the User model: from django.contrib.auth.models import User
+
+- The function to upload images to specified directory:
+	
+	> def image_upload(instance,filename:str):
+	    extension=filename.split('.')[1]
+	    return f"app_name/{instance.name}.{extension}"	<<where instance is the class model>>
+
+ this function is declared outside the class then called in ImageField
+
+- To perform actions after saving the model, use post_save function:
+
+	> from django.db.models.signals import post_save
+
+  this module contains numerous methods to perform operations after and before a specific action
+
+  usage:
+      > from django.db.models.signals import post_save
+	from django.dispatch import receiver
+	
+	class Person(model.Models):
+	    name=models.CharField(max_length=100)
+	
+	    def __str__(self):
+		return str(self.name)		<<if not string>>
+	
+	    @receiver(post_save,sender=Person)
+	    def create_user_profile(sender,instance,created,**kwargs):
+		if created:
+		    Person.objects.create(user=instance)
+
+- If the decorator @property is applied to a function, it can be used in the admin panel and the views the same way
+
+- variations are models related to other models to add more characteristics
+
+-    def save(*args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Product,self).save(*args, **kwargs)
+
+    to perform action on saving the model
+
+-
+
+============================
+
+ADMIN
+
+- To initialize the model in the admin panel, import the class then:
+	
+	from .models import Model
+
+	admin.register.site(Model)
+
+- If you want to edit the view of the model:
+
+	from .models import Model
+
+	@admin.register(Model)
+	class ModelAdmin(admin.ModelAdmin):
+	    list_display=['field',...]
+	    ...
+
+============================
+ 
+FORMS
+
+- To make a registeration form in forms.py:
+
+	from django import forms
+	from django.contrib.auth.models import User
+	from django.contrib.auth.forms import UserCreationForm
+	
+	class RegisterForm(UserCreationForm):
+	    class Meta:
+		model=User
+		fields=['username','email','password1','password2']
+
+  These fields already exist in the parent class User, what is done here is that we chose these specific fields for our form
+
+  These are standard configs, but if you want to add all the fields you can use (fields='__all__')
+
+  If you want to execlude from them, use (fields='__all__',execlude='field',)	<<execlude datatype is tuple>>
+
+============================
+
+TEMPLATES...
+
+- <form action="{p.function}" method="POST"></form> => action refers to the function executed on submitting the form
+
+- to request an attribute from the templates to the views ==> href="{% url "mainURL:branchURL" item.id %}"
+	here we requested the id of the item (item refers to the object defined in the context with same name, or in a for loop)
+	the id is now usable in the views by passing it as a parameter.
+  you can request more than one attribute ==> href="{% url "cart:remove_cart" item.product.id item.id %}"
+  to resolve these requests, you have to specify it in the urls ==> 	path('remove/<int:product_id>/<int:cart_item_id>',views.remove,name='remove_item')
+
+============================
+
+Typer
+
+from typer import Typer
+
+app=typer.Typer() => initialized the typer
+
+@app.command()   => to pass the arguments in the command line and use this function as a command
+def sum(x:int,y:int):
+    print(x+y)
+
+if __name__ =='__main__':
+    app()
+
+============================
+
+dataclass 
+
+from dataclass import dataclass
+
+@dataclass  => you don't need def __init__, or def __str__
+class Person:
+    name:str
+    age:int
+
+============================
+
+context_manager
+
+with open('text.txt','r') as file:  =>  instead of (file=open('text.txt','r'))
+    print(file.read())  =>  you can add any operation within this Scope
+
+- to make your own context manager:
+
+class MyContextManager:
+    def __init__(self,file_name,mode) -> None :
+        self.file_name=file_name
+        self.mode=mode
+        self.file=None
+    
+    def __enter__(self):    =>  when the class is initialized
+        self.file = open(self.file_name,self.mode)
+
+    def __exit__(self,exec_type,exec_val,exec_tb):     =>  on finishing the task
+        self.file.close()
+
+with MyContextManager('text.txt','r') as file:
+    print(file.read())
+
+=> context managers are like big decorators, when you say 'with MyContextManager(params) as var' it means:
+ take these required parameters and initialize the entering method, do the necessary tasks within the 'with' scope, then end it with the ending method.
