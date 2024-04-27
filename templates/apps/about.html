@@ -65,16 +65,7 @@
                 </div>
                 <div class="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
                     <div>
-                        {% if page_image %}
                         <img src="{% static page_image %}" width="600px" name="image" alt='{{item}}' style="border-radius:10px;">
-                        {% elif audio %}
-                        <img src="{{audio.image.url}}" width="600px" name="image" alt="audio_image" style="border-radius:10px;box-shadow:4px 4px 0px rgb(92, 92, 92)">
-                        {% elif item_audio %}
-                        <img src="{{item_audio.image.url}}" width="600px" name="image" alt='{{item}}' style="border-radius:10px;box-shadow:4px 4px 0px rgb(92, 92, 92)">
-                        {% else %}
-                        <img src="{{image}}" width="600px" name="image" alt="{{image.url}}" style="border-radius:10px;box-shadow:4px 4px 0px rgb(92, 92, 92)">
-                        {% endif %}
-
                     </div>
                 </div>
                 
